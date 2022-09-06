@@ -26,8 +26,13 @@ const createAuthor = async function (req, res) {
             return res.status(400).send({ status: false, msg: "Invalid format of lname" })
         }
         // --------------------------------------------------title validation----------------------------------------------------------------------
+<<<<<<< HEAD
+        if(!author.title){
+            return res.status(400).send({status:false,msg:"title must be present"})
+=======
         if (!author.title) {
             return res.status(400).send({ status: false, msg: "title must be pragent" })
+>>>>>>> cf0624d28c16f508626e7e695dea5dccb0499e5b
         }
         // -----------------------------------------------------email validation ------------------------------------------------------------
         if (!author.email) {
