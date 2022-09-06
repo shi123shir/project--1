@@ -14,10 +14,10 @@ const blogcreate = async function (req, res) {
             res.status(400).send({ msg: "Error", error: "Please Provide authroid" })
         }
         if(!blog.title){
-            return res.status(400).send({status:false,msg:"title must be pragent"})
+            return res.status(400).send({status:false,msg:"title must be present"})
         }
         if(!blog.tags){
-            return res.status(400).send({status:false,msg:"tags must be pragent"})
+            return res.status(400).send({status:false,msg:"tags must be present"})
         }
         if(!blog.category) {
             return res.status(400).send({status : false, msg:"category is required"})
@@ -84,7 +84,7 @@ const getBlog = async function (req, res) {
 
 
 
-/*                               Delete Blog                           */
+/* ________________________________Delete Blog____________________________ */
 
 
 const deleteblog = async function (req,res){
@@ -100,26 +100,6 @@ const deleteblog = async function (req,res){
       res.status(500).send({status :false, error:err})
   }
   
-}
-//__________________________________Get Blog____________________________________
-
-const getBlog = async function (req, res) {
-    try {
-        let data = req.query
-        if (Object.keys(data) == 0) {
-           return res.status(400).send({ error: "Please Provide data to get Blog" })
-        }
-
-        let findBlog = await blogModel.find({ $and: [{ isDeleted: false, isPublished: true }, data] })
-        if (!findBlog) {
-           return res.status(404).send({ msg: "Page not found" })
-        }
-        res.status(200).send({ msg: "Data Found", data: findBlog })
-    }
-
-    catch (err) {
-        res.status(500).send({ msg: "Server Error", error: err.message })
-    }
 }
 
 
