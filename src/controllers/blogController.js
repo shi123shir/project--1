@@ -42,14 +42,17 @@ const blogcreate = async function (req, res) {
 
 const updateBlog = async function (req, res) {
     try{
-        const updateBlog = await blogModel.findOneAndUpdate({blogId: req.params.id},{ 
-            $set:{
-                title: req.body.title,
-                body: req.body.body,
-                tags: req.body.tags,
-                subcategory: req.body.subcategory
-            }
-        })
+        const blogid = req.params.blogId
+        const blogupdate = req.body
+        if(Object.keys(blogupdate).length == 0){
+            return res.status(404).send({status:false,msg:"data must be given"})
+        }
+        const updateBlog = await blogModel.findOneAndUpdate({ _id: blogid, isDeleted : false},
+         { 
+            $set : {isPublisher :true, body: blogupdate.body , title : blogupdate.title, publishedAt:new Date()},
+            $push :{tags: blogupdate.tags, subcategory: blogupdate.subcategory}
+         },
+         {new: true});
     return res.status(201).send({updateBlog})
     
 }catch(err){
@@ -89,7 +92,7 @@ const getBlog = async function (req, res) {
 
 const deleteblog = async function (req,res){
   try {
-    const blogid = req.parms.blogId;
+    const blogid = req.params.blogId;
     const blog = await blogModel.findById(blogid)
     if(blog.isDeleted === true){
         return res.status(404).send ({status: false ,msg : "blog not exist"})
@@ -102,27 +105,6 @@ const deleteblog = async function (req,res){
   
 }
 //__________________________________Get Blog____________________________________
-
-const getBlog = async function (req, res) {
-    try {
-        let data = req.query
-        if (Object.keys(data) == 0) {
-           return res.status(400).send({ error: "Please Provide data to get Blog" })
-        }
-
-        let findBlog = await blogModel.find({ $and: [{ isDeleted: false, isPublished: true }, data] })
-        if (!findBlog) {
-           return res.status(404).send({ msg: "Page not found" })
-        }
-        res.status(200).send({ msg: "Data Found", data: findBlog })
-    }
-
-    catch (err) {
-        res.status(500).send({ msg: "Server Error", error: err.message })
-    }
-}
-
-
 
 
 module.exports.blogcreate = blogcreate;
