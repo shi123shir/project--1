@@ -37,8 +37,6 @@ const blogcreate = async function (req, res) {
     }
 };
 
-<<<<<<< HEAD
-
 //-------------------------------------------------PUT Api-------------------------------------//
 
 
@@ -59,10 +57,8 @@ const updateBlog = async function (req, res) {
     res.status(404).send({ msg:"blog doesn't exist"})
 }}
 
-module.exports.blogcreate = blogcreate;
-module.exports.updateBlog = updateBlog;
-=======
-<<<<<<< HEAD
+
+
 //__________________________________Get Blog____________________________________
 
 const getBlog = async function (req, res) {
@@ -88,9 +84,7 @@ const getBlog = async function (req, res) {
 
 
 
-module.exports.blogcreate = blogcreate
-module.exports.getBlog = getBlog
-=======
+/*                               Delete Blog                           */
 
 
 const deleteblog = async function (req,res){
@@ -107,10 +101,6 @@ const deleteblog = async function (req,res){
   }
   
 }
-module.exports.deleteblog = deleteblog
-module.exports.blogcreate = blogcreate
->>>>>>> cf0624d28c16f508626e7e695dea5dccb0499e5b
-
 //__________________________________Get Blog____________________________________
 
 const getBlog = async function (req, res) {
@@ -135,7 +125,8 @@ const getBlog = async function (req, res) {
 
 
 
-
-module.exports.blogcreate = blogcreate
-module.exports.getBlog = getBlog
+module.exports.blogcreate = blogcreate;
+module.exports.getBlog = getBlog;
+module.exports.deleteblog = deleteblog;
+module.exports.updateBlog = updateBlog;
 
