@@ -57,7 +57,7 @@ const updateBlog = async function (req, res) {
     
 }catch(err){
 
-    res.status(404).send({ msg:"blog doesn't exist"})
+    res.status(404).send({ msg:"blog doesn't exist" , error:err.message})
 }}
 
 
@@ -88,7 +88,7 @@ const deleteblog = async function (req,res){
 
 
 module.exports.blogcreate = blogcreate;
-module.exports.getBlog = getBlog;
+
 module.exports.deleteblog = deleteblog;
 module.exports.updateBlog = updateBlog;
 
