@@ -44,7 +44,7 @@ const getBlog = async function (req, res) {
     try {
         let data = req.query
         if (Object.keys(data) == 0) {
-           return res.status(400).send({ error: "Please Provide data to get Blog" })
+           return res.status(400).send({ error: "data required" })
         }
 
         let findBlog = await blogModel.find({ $and: [{ isDeleted: false, isPublished: true }, data] })
