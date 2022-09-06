@@ -102,7 +102,7 @@ const deleteblog = async function (req,res){
   }
   
 }
-//__________________________________Get Blog____________________________________
+//__________________________________Moduels____________________________________
 
 
 module.exports.blogcreate = blogcreate;
