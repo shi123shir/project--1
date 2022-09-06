@@ -9,10 +9,16 @@ router.get("/test-me", function (req, res) {
 })
 
 
+<<<<<<< HEAD
 router.post("/authors",authorController.createAuthor)
 router.post("/createblog",blogController.blogcreate)
 router.get ("/getauthor",authorController.getAuthorsData)
 router.get("/getBlog", blogController.getBlog) // get blog by filter
 
 
+=======
+router.post("/authors", authorController.createAuthor)
+router.post("/createblog", blogController.blogcreate)
+router.delete("/blog/:blogId",blogController.deleteblog)
+>>>>>>> cf0624d28c16f508626e7e695dea5dccb0499e5b
 module.exports = router;
