@@ -27,7 +27,7 @@ const createAuthor = async function (req, res) {
         }
         // --------------------------------------------------title validation----------------------------------------------------------------------
         if(!author.title){
-            return res.status(400).send({status:false,msg:"title must be pragent"})
+            return res.status(400).send({status:false,msg:"title must be present"})
         }
         // -----------------------------------------------------email validation ------------------------------------------------------------
         if(!author.email){
