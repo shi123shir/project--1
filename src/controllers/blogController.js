@@ -35,6 +35,28 @@ const blogcreate = async function (req, res) {
     catch (err) {
         res.status(500).send({ msg: "Server Error", error: err.message })
     }
-}
+};
 
-module.exports.blogcreate = blogcreate
+
+//-------------------------------------------------PUT Api-------------------------------------//
+
+
+const updateBlog = async function (req, res) {
+    try{
+        const updateBlog = await blogModel.findOneAndUpdate({blogId: req.params.id},{ 
+            $set:{
+                title: req.body.title,
+                body: req.body.body,
+                tags: req.body.tags,
+                subcategory: req.body.subcategory
+            }
+        })
+    return res.status(201).send({updateBlog})
+    
+}catch(err){
+
+    res.status(404).send({ msg:"blog doesn't exist"})
+}}
+
+module.exports.blogcreate = blogcreate;
+module.exports.updateBlog = updateBlog;
