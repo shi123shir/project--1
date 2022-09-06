@@ -107,26 +107,10 @@ const deleteblog = async function (req, res) {
 const deleteByQuery = async function (req, res) {
     try {
         let dataquery = req.query
-        let falseisdeleted = { isDeleted: false}
+        let falseisdeleted = { isDeleted:false}
         if (Object.keys(dataquery).length === 0) {
             return res.status(404).send({ status: true, msg: "query required" })
-        }
-        let { category, authorId, tags, subcategory, isPublished } = dataquery
-        if (dataquery.category) {
-            falseisdeleted.category = category
-        }
-        if (dataquery.authorId) {
-            falseisdeleted.authorId = authorId
-        }
-        if (dataquery.tags) {
-            falseisdeleted.tags = tags
-        }
-        if (dataquery.subcategory) {
-            falseisdeleted.subcategory = subcategory
-        }
-        if (dataquery.isPublished) {
-            falseisdeleted.isPublished = isPublished
-        }
+     }
         const deleteddata = await blogModel.findOne(dataquery)
         if (!deleteddata) {
             return res.status(404).send({ status: false, msg: "no blog match" })
@@ -136,7 +120,7 @@ const deleteByQuery = async function (req, res) {
         }
         if (deleteddata) {
             const isdel = await blogModel.find(falseisdeleted)
-            const updatedel = await blogModel.updateMany({ key: { $in: isdel} }, { $set: { isDeleted: true, deletedAt: new Date() }, new: true })
+            const updatedel = await blogModel.updateOne({ key: { $in: isdel} }, { $set: { isDeleted:true, deletedAt: new Date() }, new: true })
             res.status(200).send({ status: true, msg: "blog deleted sucessfully" })
         }
 
