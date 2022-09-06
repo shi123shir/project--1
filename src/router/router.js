@@ -11,8 +11,11 @@ router.get("/test-me", function (req, res) {
 
 router.post("/authors",authorController.createAuthor);
 router.post("/createblog",blogController.blogcreate);
- // get blog by filter
+router.get("/getBlog", blogController.getBlog) // get blog by filter
 
 router.delete("/blog/:blogId",blogController.deleteblog);
 router.put("/updateBlog/:blogId", blogController.updateBlog);
+
+router.delete("/deletebyquery", blogController.deleteByQuery)
+
 module.exports = router;

@@ -14,10 +14,10 @@ const blogcreate = async function (req, res) {
             res.status(400).send({ msg: "Error", error: "Please Provide authroid" })
         }
         if(!blog.title){
-            return res.status(400).send({status:false,msg:"title must be pragent"})
+            return res.status(400).send({status:false,msg:"title must be present"})
         }
         if(!blog.tags){
-            return res.status(400).send({status:false,msg:"tags must be pragent"})
+            return res.status(400).send({status:false,msg:"tags must be present"})
         }
         if(!blog.category) {
             return res.status(400).send({status : false, msg:"category is required"})
@@ -83,7 +83,7 @@ const updateBlog = async function (req, res) {
 }}
 
 
-/*                               Delete Blog                           */
+/*____________________________________ Delete Blog By Id_________________________*/
 
 
 const deleteblog = async function (req,res){
@@ -100,6 +100,35 @@ const deleteblog = async function (req,res){
   }
   
 }
+
+//____________________________________Delete by Query_____________________________________________
+
+const deleteByQuery = async function(req,res){
+    try{
+        let data = req.query
+
+        let findAndDelete = await blogModel.find({isDeleted : true})
+            if(findAndDelete){
+            return res.status(404).send({msg : "Document not found"})
+        }
+        
+        
+        let deleteBlog = await blogModel.findOneAndUpdate({$or : [{tags : data.tags}, {category : data.category}, {title : data.title}, {authorId : data.authorId}, {isPublished : false},{subcategory : data.subcategory}]},
+        {$set : {isDeleted : true, deletedAt : Date.now()}},
+        {new : true})
+
+         res.status(200).send({msg : "Data is deleted", data : deleteBlog})
+
+    }
+    catch(err){
+        res.status(500).send({msg : "Server Error", error : err.message})
+
+    }
+            
+}
+
+
+
 //__________________________________Moduels____________________________________
 
 
@@ -107,4 +136,5 @@ module.exports.blogcreate = blogcreate;
 module.exports.getBlog = getBlog;
 module.exports.deleteblog = deleteblog;
 module.exports.updateBlog = updateBlog;
+module.exports.deleteByQuery = deleteByQuery
 
