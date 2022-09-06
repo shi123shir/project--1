@@ -5,7 +5,7 @@ const blogcreate = async function (req, res) {
     try {
         let blog = req.body
         let authorid = blog.authorId
-        // --------------------------------------body must be pragent validation---------------------------------------------------------------------
+        // --------------------------------------body must be present validation---------------------------------------------------------------------
         if (Object.keys(blog).length == 0) {
             res.status(400).send({ msg: "Error", error: "Provide Proper Data" })
         }
