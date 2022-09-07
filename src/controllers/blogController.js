@@ -43,10 +43,14 @@ const blogcreate = async function (req, res) {
 const getBlog = async function (req, res) {
     try {
         let data = req.query
-        if (Object.keys(data) == 0) {
-            return res.status(400).send({ error: "data required" })
-        }
 
+        //If query is not given
+        if (Object.keys(data) == 0) {
+            let findBlogwithoutfilter = await blogModel.find({ $and: [{ isDeleted: false, isPublished: true }]})
+            return res.status(200).send({ data: findBlogwithoutfilter})
+        }
+        
+        //If query is given
         let findBlog = await blogModel.find({ $and: [{ isDeleted: false, isPublished: true }, data] })
         if (!findBlog) {
             return res.status(404).send({ msg: "Page not found" })
@@ -66,20 +70,28 @@ const updateBlog = async function (req, res) {
     try {
         const blogid = req.params.blogId
         const blogupdate = req.body
-        if (Object.keys(blogupdate).length == 0) {
-            return res.status(404).send({ status: false, msg: "data must be given" })
+        
+        // Blog Id is wrong
+        const validId = await blogModel.findById(blogid)
+        if(!validId){
+            return res.status(404).send({msg : "No such a Blog"})
         }
+        
+        // Body is Empty
+        if (Object.keys(blogupdate).length == 0) {
+            return res.status(400).send({ status: false, msg: "Data must be given" })
+        }
+
         const updateBlog = await blogModel.findOneAndUpdate({ _id: blogid, isDeleted: false },
             {
-                $set: { isPublisher: true, body: blogupdate.body, title: blogupdate.title, publishedAt: new Date() },
+                $set: { isPublished : true, body: blogupdate.body, title: blogupdate.title, publishedAt: new Date() },
                 $push: { tags: blogupdate.tags, subcategory: blogupdate.subcategory }
             },
             { new: true });
         return res.status(201).send({ updateBlog })
 
     } catch (err) {
-
-        res.status(404).send({ msg: "blog doesn't exist", error: err.message })
+        res.status(500).send({ msg: "Server Error", error: err.message })
     }
 }
 
@@ -91,12 +103,22 @@ const deleteblog = async function (req, res) {
     try {
         const blogid = req.params.blogId;
         const blog = await blogModel.findById(blogid)
-        if (blog.isDeleted === true) {
-            return res.status(404).send({ status: false, msg: "blog not exist" })
+
+        //Blog Id is wrong
+        if(!blog){
+            return res.status(404).send({status : false, error : "No such a Blog"})
         }
+
+        // Blog is already deleted
+        if (blog.isDeleted === true) {
+            return res.status(404).send({ status: false, msg: "Blog not exist" })
+        }
+
         let deletedb = await blogModel.findOneAndUpdate({ _id: blogid }, { isDeleted: true, deletedAt: new Date() })
         res.status(200).send({ status: true, msg: 'Data is deleted successfully' })
-    } catch (err) {
+        } 
+    
+        catch (err) {
         res.status(500).send({ status: false, error: err })
     }
 
