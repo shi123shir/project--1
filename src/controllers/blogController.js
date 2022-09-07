@@ -136,7 +136,7 @@ const deleteByQuery = async function(req,res){
     try{
         let data = req.query
         falseisdeleted = {isDeleted :false}
-        let findBlog = await blogModel.find(data)
+        let findBlog = await blogModel.findOne(data)
         if(Object.keys(data).length == 0){
             return res.status(404).send({msg : "qurey required"})
         }
