@@ -141,7 +141,7 @@ const deleteByQuery = async function(req,res){
             return res.status(404).send({msg : "qurey required"})
         }
         if(!findBlog){
-            return res.status(404).send({msg:"data not found"})
+            return res.status(404).send({msg:"no blog match"})
             
         }
         let { category, authorId, tags, subcategory, isPublished } = data
@@ -164,6 +164,7 @@ const deleteByQuery = async function(req,res){
         if (findBlog.isDeleted === true){
             return res.status(404).send({status:false,msg:"data not found"})
         }
+        
         else{
             let deleteBlog = await blogModel.updateMany(data,
                 {$set : {isDeleted : true , deletedAt : Date.now()}},
