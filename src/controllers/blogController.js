@@ -135,13 +135,34 @@ const deleteblog = async function (req, res) {
 const deleteByQuery = async function(req,res){
     try{
         let data = req.query
-
+        falseisdeleted = {isDeleted :false}
         let findBlog = await blogModel.find(data)
-        if(!findBlog){
-            return res.status(404).send({msg : "No Such a Blog"})
+        if(Object.keys(data).length == 0){
+            return res.status(404).send({msg : "qurey required"})
         }
-        if(findBlog.isDeleted == true){
-            return res.status(404).send({msg : "Page Not Found"})
+        if(!findBlog){
+            return res.status(404).send({msg:"data not found"})
+            
+        }
+        let { category, authorId, tags, subcategory, isPublished } = data
+        if (data.category) {
+            falseisdeleted.category = category
+        }
+        if (data.authorId) {
+            falseisdeleted.authorId = authorId
+        }
+        if (data.tags) {
+            falseisdeleted.tags = tags
+          
+        }
+        if (data.subcategory) {
+            falseisdeleted.subcategory = subcategory
+        }
+        if (data.isPublished) {
+            falseisdeleted.isPublished = isPublished
+        }
+        if (findBlog.isDeleted === true){
+            return res.status(404).send({status:false,msg:"data not found"})
         }
         else{
             let deleteBlog = await blogModel.updateMany(data,
