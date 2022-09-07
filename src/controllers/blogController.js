@@ -52,9 +52,12 @@ const getBlog = async function (req, res) {
         
         //If query is given
         let findBlog = await blogModel.find({ $and: [{ isDeleted: false, isPublished: true }, data] })
-        if (!findBlog) {
+
+        //Wrong data is given
+        if(Object.keys(findBlog).length == 0) {
             return res.status(404).send({ msg: "Page not found" })
         }
+        
         res.status(200).send({ msg: "Data Found", data: findBlog })
     }
 
