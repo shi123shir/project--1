@@ -1,10 +1,10 @@
 const jwt = require('jsonwebtoken');
 const blogModel = require('../models/blogModel')
 
-const authentication = async function (req, res, next) {
+const authentication =  function (req, res, next) {
     try {
         let token = req.headers["x-api-key"];
-        if (!token) token = req.headers["X-api-key"];
+        if (!token) token = req.headers["X-API-KEY"];
         if (!token) {
             return res.status(401).send({ status: false, msg: "token must be present" })
         };
