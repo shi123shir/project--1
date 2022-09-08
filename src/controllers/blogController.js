@@ -160,7 +160,6 @@ const deleteByQuery = async function (req, res) {
         if (authorid === undefined) return res.status(401).send({ status: false, msg: "not your blog , you are unauthorise" })
 
         if (blog.isDeleted == true) return res.status(400).send({ status: false, msg: "already deleted" })
-        console.log(req.token)
 
         let deletBlog = await blogModel.findByIdAndUpdate(
             { _id: authorid._id },
