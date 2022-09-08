@@ -169,7 +169,6 @@ const deleteByQuery = async function (req, res) {
         return res.status(200).send({ status: true, msg: "data deleted sucessfully" })
     }
     catch (err) {
-        console.log(err.msg)
         return res.status(500).send({ msg: err.message })
     }
 }
