@@ -7,14 +7,18 @@ const middleware = require ("../middleware/auth")
 
 // author api
 router.post("/authors",authorController.createAuthor);
-router.post("/Login", authorController.Login)
+router.post("/login", authorController.Login)
+
 // blog api
-router.post("/createblog",middleware.authentication,blogController.blogcreate);
-router.get("/getBlog",middleware.authentication ,blogController.getBlog) // get blog by filter
+router.post("/blogs",middleware.authentication,blogController.blogcreate); // create blog
+router.get("/blogs",middleware.authentication ,blogController.getBlog) // get blog by filter
+
+//update api
+router.put("/blogs/:blogId",middleware.authentication,middleware.authorisation,blogController.updateBlog);
+
 // delete api
-router.delete("/blog/:blogId",middleware.authentication,middleware.authorisation,blogController.deleteblog);
-router.put("/updateBlog/:blogId",middleware.authentication,middleware.authorisation, blogController.updateBlog);
-router.delete("/deletebyquery",middleware.authentication,blogController.deleteByQuery)
+router.delete("/blogs/:blogId",middleware.authentication,middleware.authorisation,blogController.deleteblog); // delete by id
+router.delete("/blogs",middleware.authentication,blogController.deleteByQuery) // delete by query
 
 
 module.exports = router;

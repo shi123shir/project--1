@@ -29,7 +29,7 @@ const createAuthor = async function (req, res) {
         // -----------------------------------------------------email validation ------------------------------------------------------------
         if (!author.email) return res.status(400).send({ Status: false, msg: "email is required" })
 
-        //   emailregex validation
+        //------------------------------------------ emailregex validation -------------------------------------
 
         if (!author.email.match(emailRegex)) return res.status(400).send({ status: false, msg: "email must valid format " })
 
@@ -37,13 +37,14 @@ const createAuthor = async function (req, res) {
 
         if (alreadyexistemail) return res.status(400).send({ status: false, msg: "email already exist" })
 
-        // password regex validation
+        //----------------------------------------- password regex validation ----------------------------------
 
         if (!author.password.match(passRegex)) return res.status(400).send({ status: false, msg: "password must follow valid format or less than less than 8 caraters" })
+        
+        //-------------------------Author is created ------------------------------------------------------------
 
         let authorCreated = await AuthorModel.create(author)
         res.status(201).send({ data: authorCreated })
-
     }
 
     catch (err) {
@@ -69,6 +70,7 @@ let Login = async function (req, res) {
         if (!username.match(emailRegex)) return res.status(400).send({ status: false, msg: "username is not in correct formate" })
 
         if (!password.match(passRegex)) return res.status(400).send({ status: false, msg: "password is not in correct formate" })
+        
         else {
             try {
                 // Proper Login Details and User Found

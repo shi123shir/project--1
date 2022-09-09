@@ -44,12 +44,12 @@ const getBlog = async function (req, res) {
     try {
         let data = req.query
 
-        //If query is not given
+        //If query is not given we get all blogs having isDeleted : false and isPublished : true
         if (Object.keys(data) == 0) {
             let findBlogwithoutfilter = await blogModel.find({ $and: [{ isDeleted: false, isPublished: true }] })
             return res.status(200).send({ data: findBlogwithoutfilter })
         }
-        //If query is given
+        //If query is given blogs are filtered
         let findBlog = await blogModel.find({ $and: [{ isDeleted: false, isPublished: true }, data] })
 
         //Wrong data is given
@@ -65,7 +65,7 @@ const getBlog = async function (req, res) {
     }
 }
 
-//-------------------------------------------------PUT Api-------------------------------------//
+//____________________________Update Blog_________________________________//
 
 
 const updateBlog = async function (req, res) {
@@ -77,7 +77,7 @@ const updateBlog = async function (req, res) {
         const validId = await blogModel.findById(blogid)
         if (!validId) {
             return res.status(404).send({ msg: "No such a Blog" })
-            // blog already deleted
+        // blog already deleted
         } if (validId) {
             if (validId.isDeleted === true) {
                 return res.status(404).send({ msg: "blog does not exist" })
@@ -117,7 +117,7 @@ const deleteblog = async function (req, res) {
 
         // Blog is already deleted
         if (blog.isDeleted === true) {
-            return res.status(404).send({ status: false, msg: "Blog not exist" })
+            return res.status(404).send({ status: false, msg: "Blog is already Deleted!" })
         }
 
         let deletedb = await blogModel.findOneAndUpdate({ _id: blogid }, { isDeleted: true, deletedAt: new Date() })
@@ -135,39 +135,52 @@ const deleteblog = async function (req, res) {
 const deleteByQuery = async function (req, res) {
     try {
         let qwery = req.query
-
+        
+        // If query is empty
         if (Object.keys(qwery).length === 0) {
             return res.status(400).send({ msg: "query not found" })
         }
+        
+        // Added filter isDeleted = false
         let query = { isDeleted: false, ...qwery }
 
+        // It will find those blogs whose isDeleted key is false
         let blog = await blogModel.find(query)
 
+        // In this case there is no such data or isdeleted key is true
         if (blog.length == 0) {
-            return res.status(404).send({ status: false, msg: "data not available or deleted" })
+            return res.status(404).send({ status: false, msg: "No such a Data or Data is already Deleted" })
         }
-        if (!blog) return res.status(404).send({ status: false, msg: "Data not found" })
-
+        
+        // Authorization
         let token = req.headers["x-api-key"]
-        if (!token) return res.status(401).send({ status: false, msg: "Author is not authenticated" })
+        if (!token) return res.status(401).send({ status: false, msg: "Token is mandatory" })
         let decodedToken = jwt.verify(token, "PROJECT-1")
+        
+        // This condition is catched in catch part  and will not follow this line(161)
+        if (!decodedToken) return res.status(403).send({ status: false, msg: "Invalid Signature" })
 
-        if (!decodedToken) return res.status(403).send({ status: false, msg: "User is not authorised" })
+        // Taking out authorId from token
         let authorisedauthor = decodedToken.userId
+        
+        // Taken out blog of author which matched blog authorId and token authorId
+        let authorid = blog.find(x => x.authorId == authorisedauthor) //authorid is one of the blog matching condition
+        //console.log(authorid)
 
-        let authorid = blog.find(x => x.authorId == authorisedauthor)
+        // In this case authorId in blog and token doesnot match and we cannot get blog
+        // If one authors movie tags is deleted but another author contain movie tag then we get this output
+        // To get output as [already deleted] we have to give tags = movie and authorId also
+        if (authorid === undefined) return res.status(401).send({ status: false, msg: "You cannot delete others author data. You are not authorized!" })
+        
+        // Deleting the blog of author whose tokenid and authorid is matched,query found and aren't deleted
+        // authorid.authorId = extracting authorId from blog authorid(line 165)
+        let deleteBlog = await blogModel.updateMany({$and : [{authorId : authorid.authorId},query]},
+        { $set: { isDeleted: true, deletedAt: new Date() } },
+        { new: true })
 
-        if (authorid === undefined) return res.status(401).send({ status: false, msg: "not your blog , you are unauthorise" })
-
-        if (blog.isDeleted == true) return res.status(400).send({ status: false, msg: "already deleted" })
-
-        let deletBlog = await blogModel.findByIdAndUpdate(
-            { _id: authorid._id },
-            { $set: { isDeleted: true, deletedAt: new Date() } },
-            { new: true })
-
-        return res.status(200).send({ status: true, msg: "data deleted sucessfully" })
+        return res.status(200).send({ status: true, msg: deleteBlog })
     }
+
     catch (err) {
         return res.status(500).send({ msg: err.message })
     }
