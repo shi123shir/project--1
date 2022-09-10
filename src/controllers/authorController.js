@@ -6,7 +6,7 @@ const jwt = require('jsonwebtoken')
 const createAuthor = async function (req, res) {
     try {
         const emailRegex = /^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$/
-        const nameRegex = /^[a-z/s]+$/i
+        const nameRegex = /^[a-z\s]+$/i
         const passRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,15}$/
 
         //    --------------------------------------------bodyvalidation----------------------------------------------------------------------------
@@ -39,7 +39,7 @@ const createAuthor = async function (req, res) {
 
         //----------------------------------------- password regex validation ----------------------------------
 
-        if (!author.password.match(passRegex)) return res.status(400).send({ status: false, msg: "password must follow valid format or less than less than 8 caraters" })
+        if (!author.password.match(passRegex)) return res.status(400).send({ status: false, msg: "Password must conatins 1 uppercase,lowercase,special character and has 8-15 characters" })
         
         //-------------------------Author is created ------------------------------------------------------------
 
@@ -67,9 +67,9 @@ let Login = async function (req, res) {
         if (!username || !password) {
             res.status(400).send({ msg: "Username and Password is mandatory" })
         }
-        if (!username.match(emailRegex)) return res.status(400).send({ status: false, msg: "username is not in correct formate" })
+        if (!username.match(emailRegex)) return res.status(400).send({ status: false, msg: "Username is not in correct format" })
 
-        if (!password.match(passRegex)) return res.status(400).send({ status: false, msg: "password is not in correct formate" })
+        if (!password.match(passRegex)) return res.status(400).send({ status: false, msg: "Password is not in correct format" })
         
         else {
             try {
