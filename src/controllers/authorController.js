@@ -27,17 +27,20 @@ const createAuthor = async function (req, res) {
         if (!author.title) return res.status(400).send({ status: false, msg: "title must be present" })
 
         // -----------------------------------------------------email validation ------------------------------------------------------------
+        
         if (!author.email) return res.status(400).send({ Status: false, msg: "email is required" })
-
-        //------------------------------------------ emailregex validation -------------------------------------
 
         if (!author.email.match(emailRegex)) return res.status(400).send({ status: false, msg: "email must valid format " })
 
+        //------------------------------------------ repeated email validation -------------------------------------
+
         let alreadyexistemail = await AuthorModel.findOne({ email: author.email })
 
-        if (alreadyexistemail) return res.status(400).send({ status: false, msg: "email already exist" })
+        if (alreadyexistemail) return res.status(400).send({ status: false, msg: "email is already exist" })
 
         //----------------------------------------- password regex validation ----------------------------------
+        
+        if(!author.password) return res.status(400).send({status : false, msg : "Password is mandatory"})
 
         if (!author.password.match(passRegex)) return res.status(400).send({ status: false, msg: "Password must conatins 1 uppercase,lowercase,special character and has 8-15 characters" })
         
