@@ -8,10 +8,10 @@ const blogcreate = async function (req, res) {
         let authorid = blog.authorId
         
         if (Object.keys(blog).length == 0) {
-            res.status(400).send({ msg: "Error", error: "Provide Proper Data" })
+            return res.status(400).send({ msg: "Error", error: "Provide Proper Data" })
         }
         if (!authorid) {
-            res.status(400).send({ msg: "Error", error: "Please Provide authroid" })
+            return res.status(400).send({ msg: "Error", error: "Please Provide authroid" })
         }
         if (!blog.title) {
             return res.status(400).send({ status: false, msg: "title must be present" })
@@ -25,7 +25,7 @@ const blogcreate = async function (req, res) {
 
         let checkid = await authorModel.findById(authorid)
         if (!checkid) {
-            res.status(404).send({ status: false, msg: "Author not found" })
+            return res.status(404).send({ status: false, msg: "Author not found" })
         }
 
         let createblog = await blogModel.create(blog)
@@ -80,7 +80,7 @@ const updateBlog = async function (req, res) {
         // blog already deleted
         } if (validId) {
             if (validId.isDeleted === true) {
-                return res.status(404).send({ msg: "blog does not exist" })
+                return res.status(404).send({ msg: "Blog does not exist. Already Deleted." })
             }
         }
         // Body is Empty
