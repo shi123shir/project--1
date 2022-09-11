@@ -24,7 +24,7 @@ const blogcreate = async function (req, res) {
         }
 
         let checkid = await authorModel.findById(authorid)
-        if (!checkid) {
+        if (checkid == undefined) {
             return res.status(404).send({ status: false, msg: "Author not found" })
         }
 
