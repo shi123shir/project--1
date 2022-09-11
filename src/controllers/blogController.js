@@ -178,7 +178,7 @@ const deleteByQuery = async function (req, res) {
         { $set: { isDeleted: true, deletedAt: new Date() } },
         { new: true })
 
-        return res.status(200).send({ status: true, msg: deleteBlog })
+        return res.status(200).send({ status: true, msg: "Data is deleted successfully" })
     }
 
     catch (err) {
