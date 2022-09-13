@@ -11,7 +11,7 @@ const createAuthor = async function (req, res) {
 
         //    --------------------------------------------bodyvalidation----------------------------------------------------------------------------
         let author = req.body
-        if (Object.keys(author).length == 0) return res.status(400).send({ msg: "Please Provide Data", error: "Body can't be Empty" })
+        if (Object.keys(author).length == 0) return res.status(400).send({ status:false, msg: "Body can't be Empty" })
 
         // -------------------------------------------------fname validation----------------------------------------------------------------------
         if (!author.fname) return res.status(400).send({ status: false, msg: "fname is required" })
@@ -25,6 +25,8 @@ const createAuthor = async function (req, res) {
 
         // --------------------------------------------------title validation----------------------------------------------------------------------
         if (!author.title) return res.status(400).send({ status: false, msg: "title must be present" })
+
+       if(["Mr","Mrs","Miss"].indexOf(author.title)== -1)return res.status(400).send({status:false,msg:"title must follow the enum"})
 
         // -----------------------------------------------------email validation ------------------------------------------------------------
         
@@ -47,15 +49,14 @@ const createAuthor = async function (req, res) {
         //-------------------------Author is created ------------------------------------------------------------
 
         let authorCreated = await AuthorModel.create(author)
-        res.status(201).send({ data: authorCreated })
+        res.status(201).send({status:true ,msg:"author is created",data: authorCreated })
     }
 
     catch (err) {
-        res.status(500).send({ msg: "Server Error", error: err.message })
+        res.status(500).send({ status:false, error: err.message })
 
     }
 };
-
 
 //_____________________________________________Login User_____________________________________________-
 
@@ -68,7 +69,7 @@ let Login = async function (req, res) {
         let password = req.body.password
 
         if (!username || !password) {
-            res.status(400).send({ msg: "Username and Password is mandatory" })
+            res.status(400).send({status:false, msg: "Username and Password is mandatory" })
         }
         if (!username.match(emailRegex)) return res.status(400).send({ status: false, msg: "Username is not in correct format" })
 
@@ -93,13 +94,13 @@ let Login = async function (req, res) {
 
             // In this case no User found with given login details
             catch (err) {
-                res.status(401).send({ msg: "Error! UnAuthorized User", error: err.message })
+                res.status(401).send({ status:false,msg:"unauthorise author", error: err.message })
             }
         }
     }
 
     catch (err) {
-        res.status(500).send({ msg: "Server Error", error: err.message })
+        res.status(500).send({ status:false,msg:"server error", error: err.message })
     }
 }
 

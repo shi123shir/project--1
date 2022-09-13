@@ -3,11 +3,13 @@ const mongoose = require("mongoose")
 const authorSchema = new mongoose.Schema({
     fname: {
         type: String,
-        required: true
+        required: [true, "first name is requried"],
+        trim:true
     },
     lname: {
         type: String,
-        required: true
+        required:[ true,"lastname is requried"],
+        trim:true
     },
     title: {
         type: String,
@@ -16,7 +18,7 @@ const authorSchema = new mongoose.Schema({
     },
     email: {
         type: String,
-        required: true,
+        required: [true,"email required"],
         unique: true,
 
     },

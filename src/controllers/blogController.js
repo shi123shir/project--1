@@ -8,10 +8,10 @@ const blogcreate = async function (req, res) {
         let authorid = blog.authorId
         
         if (Object.keys(blog).length == 0) {
-            return res.status(400).send({ msg: "Error", error: "Provide Proper Data" })
+            return res.status(400).send({ status:false, msg: "Provide Proper Data" })
         }
         if (!authorid) {
-            return res.status(400).send({ msg: "Error", error: "Please Provide authroid" })
+            return res.status(400).send({ status:false, msg: "Please Provide authroid" })
         }
         if (!blog.title) {
             return res.status(400).send({ status: false, msg: "title must be present" })
@@ -22,18 +22,19 @@ const blogcreate = async function (req, res) {
         if (!blog.category) {
             return res.status(400).send({ status: false, msg: "category is required" })
         }
-
         let checkid = await authorModel.findById(authorid)
         if (checkid == undefined) {
             return res.status(404).send({ status: false, msg: "Author not found" })
         }
-
+       if(blog.isPublished===true){
+        blog.publishedAt= new Date()
+     }
         let createblog = await blogModel.create(blog)
-        res.status(201).send({ data: createblog })
+        res.status(201).send({status:true,msg:"blog created", data: createblog })
     }
 
     catch (err) {
-        res.status(500).send({ msg: "Server Error", error: err.message })
+        res.status(500).send({ status:false,msg:"server error", error: err.message })
     }
 };
 
@@ -47,21 +48,21 @@ const getBlog = async function (req, res) {
         //If query is not given we get all blogs having isDeleted : false and isPublished : true
         if (Object.keys(data) == 0) {
             let findBlogwithoutfilter = await blogModel.find({ $and: [{ isDeleted: false, isPublished: true }] })
-            return res.status(200).send({ data: findBlogwithoutfilter })
+            return res.status(200).send({ status:true,data: findBlogwithoutfilter })
         }
         //If query is given blogs are filtered
         let findBlog = await blogModel.find({ $and: [{ isDeleted: false, isPublished: true }, data] })
 
         //Wrong data is given
         if (Object.keys(findBlog).length == 0) {
-            return res.status(404).send({ msg: "blog not found" })
+            return res.status(404).send({status:false, msg: "blog not found" })
         }
 
-        res.status(200).send({ msg: "Data Found", data: findBlog })
+        res.status(200).send({status:true, data: findBlog })
     }
 
     catch (err) {
-        res.status(500).send({ msg: "Server Error", error: err.message })
+        res.status(500).send({ status:false,msg: "Server Error", error: err.message })
     }
 }
 
@@ -76,11 +77,11 @@ const updateBlog = async function (req, res) {
         // Blog Id is wrong
         const validId = await blogModel.findById(blogid)
         if (!validId) {
-            return res.status(404).send({ msg: "No such a Blog" })
+            return res.status(404).send({ status:false,msg: "No such a Blog" })
         // blog already deleted
         } if (validId) {
             if (validId.isDeleted === true) {
-                return res.status(404).send({ msg: "Blog does not exist. Already Deleted." })
+                return res.status(404).send({ status:false,msg: "Blog does not exist. Already Deleted." })
             }
         }
         // Body is Empty
@@ -94,10 +95,10 @@ const updateBlog = async function (req, res) {
                 $push: { tags: blogupdate.tags, subcategory: blogupdate.subcategory }
             },
             { new: true });
-        return res.status(201).send({ updateBlog })
+        return res.status(201).send({status:true,msg:"blog updated",data: updateBlog })
 
     } catch (err) {
-        res.status(500).send({ msg: "Server Error", error: err.message })
+        res.status(500).send({ status:false,msg:"server error", error: err.message })
     }
 }
 
@@ -112,7 +113,7 @@ const deleteblog = async function (req, res) {
 
         //Blog Id is wrong
         if (!blog) {
-            return res.status(404).send({ status: false, error: "No such a Blog" })
+            return res.status(404).send({ status: false, msg: "No such a Blog" })
         }
 
         // Blog is already deleted
@@ -125,7 +126,7 @@ const deleteblog = async function (req, res) {
     }
 
     catch (err) {
-        res.status(500).send({ status: false, error: err })
+        res.status(500).send({ status: false, msg:"server error",error: err.message })
     }
 
 }
@@ -138,7 +139,7 @@ const deleteByQuery = async function (req, res) {
         
         // If query is empty
         if (Object.keys(qwery).length === 0) {
-            return res.status(400).send({ msg: "query not found" })
+            return res.status(400).send({status:false, msg: "query not found" })
         }
         
         // Added filter isDeleted = false
@@ -152,16 +153,8 @@ const deleteByQuery = async function (req, res) {
             return res.status(404).send({ status: false, msg: "No such a Data or Data is already Deleted" })
         }
         
-        // Authorization
-        let token = req.headers["x-api-key"]
-        if (!token) return res.status(401).send({ status: false, msg: "Token is mandatory" })
-        let decodedToken = jwt.verify(token, "PROJECT-1")
-        
-        // This condition is catched in catch part  and will not follow this line(161)
-        if (!decodedToken) return res.status(403).send({ status: false, msg: "Invalid Signature" })
-
         // Taking out authorId from token
-        let authorisedauthor = decodedToken.userId
+        let authorisedauthor = req.loggedInAuthorId
         
         // Taken out blog of author which matched blog authorId and token authorId
         let authorid = blog.find(x => x.authorId == authorisedauthor) //authorid is one of the blog matching condition
