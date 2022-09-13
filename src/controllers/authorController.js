@@ -89,7 +89,7 @@ let Login = async function (req, res) {
                 );
 
                 res.setHeader("x-api-key", token);
-                res.status(200).send({ status: true, msg: token })
+                res.status(201).send({ status: true, data: token })
             }
 
             // In this case no User found with given login details

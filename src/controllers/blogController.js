@@ -95,7 +95,7 @@ const updateBlog = async function (req, res) {
                 $push: { tags: blogupdate.tags, subcategory: blogupdate.subcategory }
             },
             { new: true });
-        return res.status(201).send({status:true,msg:"blog updated",data: updateBlog })
+         res.status(200).send({status: true, message : "Blog updated Successfully", data : updateBlog })
 
     } catch (err) {
         res.status(500).send({ status:false,msg:"server error", error: err.message })
@@ -122,7 +122,7 @@ const deleteblog = async function (req, res) {
         }
 
         let deletedb = await blogModel.findOneAndUpdate({ _id: blogid }, { isDeleted: true, deletedAt: new Date() })
-        res.status(200).send({ status: true, msg: 'Data is deleted successfully' })
+        res.status(200).send({ status: true})
     }
 
     catch (err) {
@@ -171,7 +171,7 @@ const deleteByQuery = async function (req, res) {
         { $set: { isDeleted: true, deletedAt: new Date() } },
         { new: true })
 
-        return res.status(200).send({ status: true, msg: "Data is deleted successfully" })
+        return res.status(200).send({ status: true })
     }
 
     catch (err) {
